@@ -11,10 +11,6 @@ public class ShoppingList extends ArrayList<ListEntry> {
         this.reader = reader;
     }
 
-    public void printNumberOfProducts() {
-        System.out.println("You have " + this.size() + " products in your shopping list.");
-    }
-
     public boolean dispatchAction(int decision) {
         switch (decision) {
             case 1: {
