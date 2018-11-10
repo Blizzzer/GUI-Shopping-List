@@ -25,6 +25,16 @@ public class PrinterLibrary {
         return reader.nextInt();
     }
 
+    public static int inputProductIndex(Scanner reader) {
+        System.out.println("Please enter product index ...");
+        return reader.nextInt();
+    }
+
+    public static String inputProductName(Scanner reader) {
+        System.out.println("Please enter product name ...");
+        return reader.next();
+    }
+
     public static void wrongDecision(){
         System.out.println("Your answer is invalid");
     }

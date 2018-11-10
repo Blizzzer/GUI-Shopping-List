@@ -51,8 +51,7 @@ public class ShoppingList extends ArrayList<ListEntry> {
     }
 
     private void deleteProductAction(){
-        System.out.println("Please enter product index ...");
-        int index = reader.nextInt();
+        int index = PrinterLibrary.inputProductIndex(reader);
         if(!isIndexValid(index)){
             System.out.println("You have entered invalid product index!");
             return;
@@ -61,8 +60,7 @@ public class ShoppingList extends ArrayList<ListEntry> {
     }
 
     private void buyProductAction(){
-        System.out.println("Please enter product index ...");
-        int index = reader.nextInt();
+        int index = PrinterLibrary.inputProductIndex(reader);
         if(!isIndexValid(index)){
             System.out.println("You have entered invalid product index!");
             return;
@@ -72,8 +70,7 @@ public class ShoppingList extends ArrayList<ListEntry> {
     }
 
     private void addProductAction(){
-        System.out.println("Please enter product name ...");
-        this.add(new ListEntry(reader.next()));
+        this.add(new ListEntry(PrinterLibrary.inputProductName(reader)));
     }
 
     private void clearListAction(){
