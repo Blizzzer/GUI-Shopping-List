@@ -1,9 +1,10 @@
 package com;
 
-import java.util.ArrayList;
-import java.util.Scanner;
 
-public class ShoppingList extends ArrayList<ListEntry> {
+import java.util.Scanner;
+import java.util.Vector;
+
+public class ShoppingList extends Vector<ListEntry> {
     private Scanner reader;
 
     public ShoppingList(Scanner reader){

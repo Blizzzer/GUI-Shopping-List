@@ -24,6 +24,11 @@ public class ListEntry {
         return product;
     }
 
+    @Override
+    public String toString() {
+        return product + " | " + priceToString();
+    }
+
     public String priceToString(){
         if(isBought) {
             return String.valueOf(price);
