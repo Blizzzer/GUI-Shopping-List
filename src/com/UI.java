@@ -3,51 +3,129 @@ package com;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Scanner;
+
 
 public class UI extends JFrame {
-    private Scanner reader;
     private ShoppingList shoppingList;
-    private JList jList;
 
-    UI(){
-        reader = new Scanner(System.in);
-        shoppingList = new ShoppingList(reader);
-        jList = new JList();
+    UI() {
+        shoppingList = new ShoppingList();
         this.getContentPane().add(this.prepareMainPanel());
         this.setFrame();
     }
 
     private JPanel prepareMainPanel() {
-        JPanel tmpPanel = new JPanel();
-        tmpPanel.setPreferredSize(new Dimension(600, 600));
-        tmpPanel.setLayout(new FlowLayout());
-        tmpPanel.add(jList);
-        tmpPanel.add(prepareBoomButton());
-        return tmpPanel;
+        // TODO Showing sum of paid money
+        // TODO Showing how many product you still need to buy
+        // TODO To buy dialog
+        JPanel mainPanel = new JPanel();
+        mainPanel.setPreferredSize(new Dimension(600, 600));
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.add(prepareSaveLoadPanel(), BorderLayout.LINE_END);
+        mainPanel.add(prepareButtonPanel(), BorderLayout.PAGE_END);
+        mainPanel.add(prepareShoppingListPanel(), BorderLayout.CENTER);
+        return mainPanel;
     }
 
-    private JButton prepareBoomButton() {
-        JButton tmpButton = new JButton("Boom button");
-        tmpButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                shoppingList.add(new ListEntry("boom"));
-                jList.setListData(shoppingList);
+    private JPanel prepareShoppingListPanel() {
+        // TODO ScrollPane
+        JPanel shoppingListPanel = new JPanel();
+        shoppingListPanel.setLayout(new BorderLayout());
+        shoppingListPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+        shoppingListPanel.add(shoppingList);
+        return shoppingListPanel;
+    }
+
+    private JPanel prepareSaveLoadPanel() {
+        JPanel saveLoadPanel = new JPanel();
+        saveLoadPanel.setLayout(new BoxLayout(saveLoadPanel, BoxLayout.Y_AXIS));
+        saveLoadPanel.add(Box.createVerticalStrut(10));
+        saveLoadPanel.add(prepareSaveButton());
+        saveLoadPanel.add(Box.createVerticalStrut(10));
+        saveLoadPanel.add(prepareLoadButton());
+        return saveLoadPanel;
+    }
+
+    private JPanel prepareButtonPanel() {
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(prepareAddButton());
+        buttonPanel.add(prepareBuyButton());
+        buttonPanel.add(prepareDeleteButton());
+        buttonPanel.add(prepareClearButton());
+        return buttonPanel;
+    }
+
+    private JButton prepareAddButton() {
+        JButton tmpButton = new JButton("Add button");
+        tmpButton.addActionListener((ActionEvent e) -> {
+            String productName = DialogLibrary.showProductInputDialog();
+            try {
+                if (!productName.isEmpty()) {
+                    shoppingList.addElement(productName);
+                    return;
+                }
+                DialogLibrary.showEmptyInputDialog();
+            } catch (NullPointerException ne) {
             }
         });
         return tmpButton;
     }
 
-    private void setFrame(){
+    private JButton prepareClearButton() {
+        JButton tmpButton = new JButton("Clear button");
+        tmpButton.addActionListener((ActionEvent e) -> shoppingList.clearList());
+        return tmpButton;
+    }
+
+    private JButton prepareDeleteButton() {
+        JButton tmpButton = new JButton("Delete button");
+        tmpButton.addActionListener((ActionEvent e) -> {
+            if (shoppingList.isNotSelected()) {
+                DialogLibrary.showNotSelectedDialog();
+                return;
+            }
+            shoppingList.deleteSelectedElement();
+        });
+        return tmpButton;
+    }
+
+    private JButton prepareBuyButton() {
+        JButton tmpButton = new JButton("Buy button");
+        tmpButton.addActionListener((ActionEvent e) -> {
+            if (shoppingList.isNotSelected()) {
+                DialogLibrary.showNotSelectedDialog();
+                return;
+            }
+            String response = DialogLibrary.showPriceInputDialog();
+            try {
+                if (!response.isEmpty()) {
+                    shoppingList.buySelectedElement(Float.parseFloat(response));
+                    return;
+                }
+                DialogLibrary.showEmptyInputDialog();
+            } catch (NullPointerException ne) {
+            }
+        });
+        return tmpButton;
+    }
+
+    private JButton prepareSaveButton() {
+        JButton tmpButton = new JButton("Save button");
+        tmpButton.addActionListener((ActionEvent e) -> shoppingList.saveListToFile());
+        return tmpButton;
+    }
+
+    private JButton prepareLoadButton() {
+        JButton tmpButton = new JButton("Load button");
+        tmpButton.addActionListener((ActionEvent e) -> shoppingList.loadListFromFile());
+        return tmpButton;
+    }
+
+    private void setFrame() {
         this.setTitle("Shopping List");
         this.pack();
         this.setVisible(true);
     }
 
-    private void temporaryFill(ShoppingList shoppingList){
-        shoppingList.add(new ListEntry("kotlet"));
-        shoppingList.add(new ListEntry("makaron"));
-    }
+
 }

@@ -1,87 +1,78 @@
 package com;
 
 
-import java.util.Scanner;
+import javax.swing.*;
+import java.awt.*;
+import java.io.*;
 import java.util.Vector;
 
-public class ShoppingList extends Vector<ListEntry> {
-    private Scanner reader;
+public class ShoppingList extends JList<ListEntry> {
+    private Vector<ListEntry> list;
 
-    public ShoppingList(Scanner reader){
+    ShoppingList() {
         super();
-        this.reader = reader;
+        this.list = new Vector<>();
+        this.setFont(new Font("name", Font.ROMAN_BASELINE, 15));
+        this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
 
-    public boolean dispatchAction(int decision) {
-        switch (decision) {
-            case 1: {
-                showListAction();
-                break;
-            }
-            case 2: {
-                deleteProductAction();
-                break;
-            }
-            case 3: {
-                buyProductAction();
-                break;
-            }
-            case 4: {
-                addProductAction();
-                break;
-            }
-            case 5: {
-                clearListAction();
-                break;
-            }
-            case 6: {
-                return false;
-            }
-            default: PrinterLibrary.wrongDecision();
+    public void addElement(String productName) {
+        list.add(new ListEntry(productName));
+        update();
+    }
+
+    public void clearList() {
+        list.clear();
+        update();
+    }
+
+    public void deleteSelectedElement() {
+        list.remove(this.getSelectedIndex());
+        update();
+    }
+
+    public void buySelectedElement(Float price) {
+        // TODO Handle already bought error ??
+        // TODO Handle wrong price error
+        list.get(this.getSelectedIndex()).buyIt(price);
+        update();
+    }
+
+    private void update() {
+        this.setListData(list);
+    }
+
+    public boolean isNotSelected() {
+        return this.getSelectedIndex() == -1;
+    }
+
+    public void saveListToFile() {
+        try {
+            FileOutputStream fileOut = new FileOutputStream("list.dat");
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            out.writeObject(list);
+            out.close();
+            fileOut.close();
+        } catch (IOException i) {
+            i.printStackTrace();
         }
-        return true;
     }
 
-    private void showListAction() {
-        System.out.println();
-        System.out.println("Your shopping list:");
-        PrinterLibrary.separator();
-        this.forEach((entry) -> System.out.println(entry.getProduct() + " | " + entry.priceToString()));
-        System.out.println();
-        PrinterLibrary.separator();
-    }
-
-    private void deleteProductAction(){
-        int index = PrinterLibrary.inputProductIndex(reader);
-        if(isIndexInvalid(index)){
-            System.out.println("You have entered invalid product index!");
-            return;
+    public void loadListFromFile() {
+        try {
+            FileInputStream fileIn = new FileInputStream("list.dat");
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            list = (Vector<ListEntry>) in.readObject();
+            in.close();
+            fileIn.close();
+        } catch (IOException i) {
+            i.printStackTrace();
+        } catch (ClassNotFoundException c) {
+            System.out.println("Error");
+            c.printStackTrace();
         }
-        this.remove(index - 1);
+        update();
     }
-
-    private void buyProductAction(){
-        int index = PrinterLibrary.inputProductIndex(reader);
-        if(isIndexInvalid(index)){
-            System.out.println("You have entered invalid product index!");
-            return;
-        }
-        System.out.println("Please enter product price ...");
-        this.get(index - 1).buyIt(reader.nextFloat());
-    }
-
-    private void addProductAction(){
-        this.add(new ListEntry(PrinterLibrary.inputProductName(reader)));
-    }
-
-    private void clearListAction(){
-        this.clear();
-    }
-
-    private boolean isIndexInvalid(int index){
-        return !(index > 0 && index <= this.size());
-    }
-
 
 
 }
